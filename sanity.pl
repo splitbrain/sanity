@@ -1,6 +1,7 @@
 #!/usr/bin/perl -w
 
 use File::Basename;
+use Getopt::Std;
 
 # check for unicodedecoder
 my $unidec = 0;
@@ -10,6 +11,10 @@ unless ($@) {
   Text::Unidecode ->import();
 }else{
 }
+
+# check commandline params
+my %OPTS;
+getopts('le',\%OPTS);
 
 # Function prototypes:
 sub readFiles($);
@@ -49,7 +54,7 @@ sub renameFile($$){
 	$newfile =~ s/\*/x/g;    #windows doesn't like this at all :-)
 	$newfile =~ s/&/_and_/g; #ampersand to english
   $newfile =~ s/@/_at_/g;
-  $newfile =~ s/['"`]//g;  #remove thes completely
+  $newfile =~ s/['"`]//g;  #remove these completely
 
 	#lowercase some known extensions	
 	$newfile =~ s/bat$/bat/gi;
@@ -84,13 +89,20 @@ sub renameFile($$){
 	$newfile =~ s/\357/'/g;
 
   #Remove all chars we don't want
-  $newfile =~ s/[^A-Za-z_0-9\(\)\[\]\.\-]/_/g;
+  if($OPTS{'e'}){
+    $newfile =~ s/[^A-Za-z_0-9\.\-]/_/g;
+  }else{
+    $newfile =~ s/[^A-Za-z_0-9\(\)\[\]\.\-]/_/g;
+  }
 
   #some cleanup
 	$newfile =~ s/_-_/-/g;	 #Dashes should not be surounded by underscores
 	$newfile =~ s/_-/-/g;
 	$newfile =~ s/-_/-/g;
 	$newfile =~ s/__+/_/g;    #Reduce multiple spaces to one
+
+  #lowercase if wanted
+  $newfile = lc($newfile) if($OPTS{'l'});
 
 	if ("$path/$file" ne "$path/$newfile"){
 	  print STDERR "Renaming '$file' to '$newfile'";
@@ -133,15 +145,20 @@ sub readFiles($) {
 ##############################################################################
 # prints a short Help text
 sub help() {
-print STDERR <<STOP
+print <<STOP
 
-      Syntax: sanity.pl <file(s)>
+      Syntax: sanity.pl [options] <file(s)>
 
       This tool renames files back to sane names. It does so by replacing
       spaces, german umlauts and some special chars by underscores.
 
       If a renamed version of a file already exists the renaming will be
       skipped.
+
+      Options:
+
+        -l convert to lowercase
+        -e extended cleaning (removes brackets as well)
 
       The argument can be files and directories. WARNING: Directories will
       be recurseively changed.
