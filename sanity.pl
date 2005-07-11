@@ -14,7 +14,7 @@ unless ($@) {
 
 # check commandline params
 my %OPTS;
-getopts('le',\%OPTS);
+getopts('lea',\%OPTS);
 
 # Function prototypes:
 sub readFiles($);
@@ -25,14 +25,14 @@ sub help();
 # rename a given File
 sub renameFile($$){
 
-	(my $path,$file) = @_;
-	my $newfile = $file;
+  (my $path,$file) = @_;
+  my $newfile = $file;
 
-	#remove chars below 32
-	$newfile =~ s/[\x00-\x1f]/_/g;
+  #remove chars below 32
+  $newfile =~ s/[\x00-\x1f]/_/g;
 
-	#urldecode:
-	$newfile =~ s/%([0-9A-Fa-f][0-9A-Fa-f])/chr(hex($1))/ge;
+  #urldecode:
+  $newfile =~ s/%([0-9A-Fa-f][0-9A-Fa-f])/chr(hex($1))/ge;
 
   #fix broken unicode chars for german umlauts
   $newfile =~ s/\303\204/Ae/g;
@@ -48,41 +48,41 @@ sub renameFile($$){
     $newfile = unidecode($newfile);
   }
 
-	#add more translations here:
-	
-	$newfile =~ s/\\//g;	   #remove backspaces
-	$newfile =~ s/\*/x/g;    #windows doesn't like this at all :-)
-	$newfile =~ s/&/_and_/g; #ampersand to english
+  #add more translations here:
+  
+  $newfile =~ s/\\//g;     #remove backspaces
+  $newfile =~ s/\*/x/g;    #windows doesn't like this at all :-)
+  $newfile =~ s/&/_and_/g; #ampersand to english
   $newfile =~ s/@/_at_/g;
   $newfile =~ s/['"`]//g;  #remove these completely
 
-	#lowercase some known extensions	
-	$newfile =~ s/bat$/bat/gi;
-	$newfile =~ s/exe$/exe/gi;
-	$newfile =~ s/ogg$/ogg/gi;
-	$newfile =~ s/mp3$/mp3/gi;
-	$newfile =~ s/rar$/rar/gi;
-	$newfile =~ s/pdf$/pdf/gi;
-	$newfile =~ s/pdb$/pdb/gi;
-	
-	#German Umlauts (Linux charset)
-	$newfile =~ s/ü/ue/g;
-	$newfile =~ s/Ü/Ue/g;
-	$newfile =~ s/ö/oe/g;
-	$newfile =~ s/Ö/Oe/g;
-	$newfile =~ s/ä/ae/g;
-	$newfile =~ s/Ä/Ae/g;
-	$newfile =~ s/ß/ss/g;
+  #lowercase some known extensions  
+  $newfile =~ s/bat$/bat/gi;
+  $newfile =~ s/exe$/exe/gi;
+  $newfile =~ s/ogg$/ogg/gi;
+  $newfile =~ s/mp3$/mp3/gi;
+  $newfile =~ s/rar$/rar/gi;
+  $newfile =~ s/pdf$/pdf/gi;
+  $newfile =~ s/pdb$/pdb/gi;
+  
+  #German Umlauts (Linux charset)
+  $newfile =~ s/ü/ue/g;
+  $newfile =~ s/Ü/Ue/g;
+  $newfile =~ s/ö/oe/g;
+  $newfile =~ s/Ö/Oe/g;
+  $newfile =~ s/ä/ae/g;
+  $newfile =~ s/Ä/Ae/g;
+  $newfile =~ s/ß/ss/g;
 
-	#German Umlauts (Windows charset)
-	$newfile =~ s/\x8e/Ae/g;
-	$newfile =~ s/\x99/Oe/g;
-	$newfile =~ s/\x9A/Ue/g;
-	$newfile =~ s/\x84/ae/g;
-	$newfile =~ s/\x94/oe/g;
-	$newfile =~ s/\x81/ue/g;
-	$newfile =~ s/\xe1/ss/g;
-	$newfile =~ s/\253/.5/g;
+  #German Umlauts (Windows charset)
+  $newfile =~ s/\x8e/Ae/g;
+  $newfile =~ s/\x99/Oe/g;
+  $newfile =~ s/\x9A/Ue/g;
+  $newfile =~ s/\x84/ae/g;
+  $newfile =~ s/\x94/oe/g;
+  $newfile =~ s/\x81/ue/g;
+  $newfile =~ s/\xe1/ss/g;
+  $newfile =~ s/\253/.5/g;
 
   #Accents
   $newfile =~ s/é/e/g;
@@ -96,9 +96,9 @@ sub renameFile($$){
   $newfile =~ s/\202/_/g;
   $newfile =~ s/\212/_/g;
 
-	$newfile =~ s/_\././g;
-	$newfile =~ s/\.\././g;
-	$newfile =~ s/\357/'/g;
+  $newfile =~ s/_\././g;
+  $newfile =~ s/\.\././g;
+  $newfile =~ s/\357/'/g;
 
   #Remove all chars we don't want
   if($OPTS{'e'}){
@@ -108,26 +108,26 @@ sub renameFile($$){
   }
 
   #some cleanup
-	$newfile =~ s/_-_/-/g;	 #Dashes should not be surounded by underscores
-	$newfile =~ s/_-/-/g;
-	$newfile =~ s/-_/-/g;
-	$newfile =~ s/__+/_/g;    #Reduce multiple spaces to one
+  $newfile =~ s/_-_/-/g;   #Dashes should not be surounded by underscores
+  $newfile =~ s/_-/-/g;
+  $newfile =~ s/-_/-/g;
+  $newfile =~ s/__+/_/g;    #Reduce multiple spaces to one
 
   #lowercase if wanted
   $newfile = lc($newfile) if($OPTS{'l'});
 
-	if ("$path/$file" ne "$path/$newfile"){
-	  print STDERR "Renaming '$file' to '$newfile'";
-	  if (-e "$path/$newfile"){
+  if ("$path/$file" ne "$path/$newfile"){
+    print STDERR "Renaming '$file' to '$newfile'";
+    if (-e "$path/$newfile"){
             print STDERR "\tSKIPPED new file exists\n";
-	  }else{
- 	    if (rename("$path/$file","$path/$newfile")){
-	      print STDERR "\tOKAY\n";
-	    }else{
-	      print STDERR "\tFAILED\n";
-	    }
+    }else{
+       if (rename("$path/$file","$path/$newfile")){
+        print STDERR "\tOKAY\n";
+      }else{
+        print STDERR "\tFAILED\n";
+      }
           }
-	}
+  }
 }
 
 ##############################################################################
@@ -140,7 +140,8 @@ sub readFiles($) {
   closedir(ROOT);
 
   foreach (@files) {
-    next if /^\.|\.\.$/;  #skip upper dirs
+    next if /^(\.|\.\.)$/;             #skip upper dirs
+    next if((/^\./) && (!$OPTS{'a'})); #skip hidden files
     my $file =$_;
     my $fullFilename    = "$path/$file";
     
@@ -171,6 +172,7 @@ print <<STOP
 
         -l convert to lowercase
         -e extended cleaning (removes brackets as well)
+        -a convert all files - don't exclude hidden files and dirs
 
       The argument can be files and directories. WARNING: Directories will
       be recurseively changed.
