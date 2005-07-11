@@ -84,6 +84,18 @@ sub renameFile($$){
 	$newfile =~ s/\xe1/ss/g;
 	$newfile =~ s/\253/.5/g;
 
+  #Accents
+  $newfile =~ s/é/e/g;
+  $newfile =~ s/É/E/g;
+  $newfile =~ s/è/e/g;
+  $newfile =~ s/à/a/g;
+  $newfile =~ s/â/a/g;
+  $newfile =~ s/ô/o/g;
+  $newfile =~ s/ñ/n/g;
+
+  $newfile =~ s/\202/_/g;
+  $newfile =~ s/\212/_/g;
+
 	$newfile =~ s/_\././g;
 	$newfile =~ s/\.\././g;
 	$newfile =~ s/\357/'/g;
