@@ -1,0 +1,26 @@
+Syntax: sanity.pl [options] <file(s)>
+
+This tool renames files back to sane names. It does so by replacing
+spaces, german umlauts and some special chars by underscores.
+
+If a renamed version of a file already exists the renaming will be
+skipped.
+
+Options:
+
+    -l convert to lowercase
+    -e extended cleaning (removes brackets as well)
+    -a convert all files - don't exclude hidden files and dirs
+
+The argument can be files and directories. WARNING: Directories will
+be recurseively changed.
+_____________________________________________________________________
+sanity.pl - Sanitize Filenames
+Copyright (C) 2003-2005 Andreas Gohr <andi@splitbrain.org>
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of
+the License, or (at your option) any later version.
+
+See COPYING for details
